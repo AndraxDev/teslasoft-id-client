@@ -1,0 +1,111 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
+
+group = 'org.teslasoft.core.auth'
+version = '1.0.1'
+
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier("sources")
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.teslasoft.core.auth'
+            artifactId = 'teslasoft-id'
+            version = '1.0.1'
+
+            artifact(sourceJar)
+            artifact("$buildDir/outputs/aar/teslasoft-id-release.aar")
+        }
+
+        mavenJava(MavenPublication) {
+            pom {
+                name = 'Teslasoft ID Client'
+                description = 'This library enable you to authenticate users through Teslasoft ID'
+                url = 'http://teslasoft.org/'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'andrax'
+                        name = 'AndraxDev'
+                        email = 'dostapenko82@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/AndraxDev/teslasoft-id-client.git'
+                    developerConnection = 'scm:git:ssh://github.com/AndraxDev/teslasoft-id-client.git'
+                    url = 'http://teslasoft.org/'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url "$buildDir/repo"
+        }
+    }
+}
+
+android {
+    namespace 'org.teslasoft.core.auth'
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 28
+        targetSdk 33
+
+        versionName "1.0.1"
+
+        consumerProguardFiles "consumer-rules.pro"
+
+        aarMetadata {
+            minCompileSdk = 28
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = '11'
+    }
+
+    testFixtures {
+        enable = true
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.appcompat:appcompat:1.6.0'
+    implementation 'com.google.android.material:material:1.9.0-alpha01'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
