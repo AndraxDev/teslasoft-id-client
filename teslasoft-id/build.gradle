@@ -2,60 +2,17 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
+    id 'signing'
 }
 
-group = 'org.teslasoft.core.auth'
-version = '1.0.1'
+def artifactId0 = 'teslasoft-id'
+def ossrhUsername = "<OSSRH username has been obfuscated>"
+def ossrhPassword = "<OSSRH password has been obfuscated>"
+def signingKey = "<PGP secret key has been obfuscated>"
+def signingKeyPwd = "<PGP key passcode has been obfuscated>"
 
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier("sources")
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'org.teslasoft.core.auth'
-            artifactId = 'teslasoft-id'
-            version = '1.0.1'
-
-            artifact(sourceJar)
-            artifact("$buildDir/outputs/aar/teslasoft-id-release.aar")
-        }
-
-        mavenJava(MavenPublication) {
-            pom {
-                name = 'Teslasoft ID Client'
-                description = 'This library enable you to authenticate users through Teslasoft ID'
-                url = 'http://teslasoft.org/'
-                licenses {
-                    license {
-                        name = 'The Apache License, Version 2.0'
-                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        id = 'andrax'
-                        name = 'AndraxDev'
-                        email = 'dostapenko82@gmail.com'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:git://github.com/AndraxDev/teslasoft-id-client.git'
-                    developerConnection = 'scm:git:ssh://github.com/AndraxDev/teslasoft-id-client.git'
-                    url = 'http://teslasoft.org/'
-                }
-            }
-        }
-    }
-
-    repositories {
-        maven {
-            url "$buildDir/repo"
-        }
-    }
-}
+group = "org.teslasoft.core.auth"
+version = "1.0.2"
 
 android {
     namespace 'org.teslasoft.core.auth'
@@ -65,7 +22,7 @@ android {
         minSdk 28
         targetSdk 33
 
-        versionName "1.0.1"
+        versionName "1.0.2"
 
         consumerProguardFiles "consumer-rules.pro"
 
@@ -108,4 +65,99 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.11'
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+task javadoc(type: Javadoc) {
+
+    doFirst {
+        configurations.implementation
+                .filter { it.name.endsWith('.aar') }
+                .each { aar ->
+                    copy {
+                        from zipTree(aar)
+                        include "**/classes.jar"
+                        into "$buildDir/tmp/aarsToJars/${aar.name.replace('.aar', '')}/"
+                    }
+                }
+    }
+
+    configurations.implementation.setCanBeResolved(true)
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.implementation
+    classpath += fileTree(dir: "$buildDir/tmp/aarsToJars/")
+    destinationDir = file("${project.buildDir}/outputs/javadoc/")
+    failOnError false
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set('javadoc')
+    from javadoc
+}
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                // You can then customize attributes of the publication as shown below.
+                groupId = group
+                artifactId = artifactId0
+                version = version
+
+                artifact androidSourcesJar
+                artifact javadocJar
+
+                pom {
+                    name = artifactId
+                    description = 'This library enable you to authenticate users through Teslasoft ID'
+                    url = 'https://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'andrax'
+                            name = 'AndraxDev'
+                            email = 'dostapenko82@gmail.com'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id.git'
+                        developerConnection = 'scm:git:ssh://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id.git'
+                        url = 'https://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id'
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "sonatype"
+
+                def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+                def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+
+                credentials {
+                    username ossrhUsername
+                    password ossrhPassword
+                }
+            }
+        }
+    }
+}
+
+signing {
+    useInMemoryPgpKeys(signingKey, signingKeyPwd)
+    sign publishing.publications
 }
