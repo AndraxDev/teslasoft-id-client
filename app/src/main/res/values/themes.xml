@@ -11,4 +11,17 @@
         <item name="android:navigationBarColor">@color/window_background</item>
         <item name="android:windowBackground">@color/window_background</item>
     </style>
+
+    <style name="App.MaterialAlertDialog" parent="MaterialAlertDialog.Material3">
+        <item name="buttonBarNegativeButtonStyle">@style/App.NegativeButtonStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/App.PositiveButtonStyle</item>
+    </style>
+
+    <style name="App.NegativeButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/teslasoft_services_auth_accent_900</item>
+    </style>
+
+    <style name="App.PositiveButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/teslasoft_services_auth_accent_900</item>
+    </style>
 </resources>

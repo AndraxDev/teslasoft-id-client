@@ -14,21 +14,23 @@
  * limitations under the License.
  ******************************************************************************/
 
+package org.teslasoft.core.auth.client
 
-package org.teslasoft.id.example
+interface SettingsListener {
+    /**
+     * onSuccess triggers when app retrieved their settings from the server.
+     *
+     * @param settings JSON string.
+     * */
+    fun onSuccess(settings: String) { /* default implementation */ }
 
-import android.app.Application
-import android.content.Context
-import com.google.android.material.color.DynamicColors
-
-class MainApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-        appContext = applicationContext
-        DynamicColors.applyToActivitiesIfAvailable(this)
-    }
-
-    companion object {
-        lateinit var appContext : Context
-    }
+    /**
+     * onError triggers when internal error is occurred. (ex. no Internet connection, invalid api key/session token/app signature
+     * or database is corrupted).
+     *
+     * @param state Reason of failure
+     * @param message Error message. Please use android string instead od this message. Android strings can be translated to other languages.
+     * This message is for developers only.
+     * */
+    fun onError(state: String, message: String) { /* default implementation */ }
 }

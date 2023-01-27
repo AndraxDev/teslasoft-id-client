@@ -1,3 +1,19 @@
+/*******************************************************************************
+ * Copyright (c) 2023 Dmytro Ostapenko. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
 package org.teslasoft.core.auth
 
 import com.google.gson.Gson
@@ -108,35 +124,29 @@ open class RequestNetworkController {
 
             val req: Request = reqBuilder.build()
 
-            clientCall(req, requestNetwork, tag, requestListener)
+            clientCall(req, tag, requestListener)
         } catch (e: Exception) {
             requestListener.onErrorResponse(tag, e.message!!)
         }
     }
 
     private fun clientCall(
-        req: Request,
-        requestNetwork: RequestNetwork,
-        tag: String,
-        requestListener: RequestNetwork.RequestListener
+            req: Request,
+            tag: String,
+            requestListener: RequestNetwork.RequestListener
     ) {
         getClient().newCall(req).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                requestNetwork.getActivity().runOnUiThread {
-                    requestListener.onErrorResponse(
-                        tag, e.message!!
-                    )
-                }
+
+                /* Reminder: Do not forget to add runOnUiThread {} when working with UI elements */
+                requestListener.onErrorResponse(tag, e.message!!)
             }
 
             override fun onResponse(call: Call, response: Response) {
                 val responseBody: String = response.body.string().trim()
 
-                requestNetwork.getActivity().runOnUiThread {
-                    requestListener.onResponse(
-                        tag, responseBody
-                    )
-                }
+                /* Reminder: Do not forget to add runOnUiThread {} when working with UI elements */
+                requestListener.onResponse(tag, responseBody)
             }
         })
     }

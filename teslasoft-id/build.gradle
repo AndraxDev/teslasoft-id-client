@@ -6,13 +6,13 @@ plugins {
 }
 
 def artifactId0 = 'teslasoft-id'
-def ossrhUsername = "<OSSRH username has been obfuscated>"
-def ossrhPassword = "<OSSRH password has been obfuscated>"
-def signingKey = "<PGP secret key has been obfuscated>"
-def signingKeyPwd = "<PGP key passcode has been obfuscated>"
+def ossrhUsername = "<OSSHR username has been obfuscated>"
+def ossrhPassword = "<OSSHR password has been obfuscated>"
+def signingKey = "<Signing key has been obfuscated>"
+def signingKeyPwd = "<Signing key passcode has been obfuscated>"
 
 group = "org.teslasoft.core.auth"
-version = "1.0.2"
+version = "1.1.0"
 
 android {
     namespace 'org.teslasoft.core.auth'
@@ -22,7 +22,7 @@ android {
         minSdk 28
         targetSdk 33
 
-        versionName "1.0.2"
+        versionName "1.1.0"
 
         consumerProguardFiles "consumer-rules.pro"
 

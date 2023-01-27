@@ -1,4 +1,20 @@
-package org.teslasoft.core.auth
+/*******************************************************************************
+ * Copyright (c) 2023 Dmytro Ostapenko. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+
+package org.teslasoft.core.auth.widget
 
 import android.app.Activity
 import android.content.Context
@@ -11,10 +27,7 @@ import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
@@ -26,6 +39,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.elevation.SurfaceColors
 import com.google.gson.Gson
+import org.teslasoft.core.auth.*
 
 class TeslasoftIDButton : Fragment() {
     private var accountIcon: ImageView? = null
@@ -37,29 +51,35 @@ class TeslasoftIDButton : Fragment() {
     private var accountSettings: SharedPreferences? = null
     private var listener: AccountSyncListener? = null
 
-    private var token: String = ""
+    private var token: String? = null
 
-    private var verificationApiListener: RequestNetwork.RequestListener = object : RequestNetwork.RequestListener {
+    private var verificationApiListener: RequestNetwork.RequestListener = object :
+        RequestNetwork.RequestListener {
+
+        /* Reminder: Do not forget to add runOnUiThread {} when working with UI elements */
         override fun onResponse(tag: String, message: String) {
             try {
                 val gson = Gson()
                 val accountData: Map<*,*> = gson.fromJson(message, Map::class.java)
-                accountName?.text = accountData["user_name"].toString()
-                accountEmail?.text = accountData["user_email"].toString()
 
-                accountIcon?.visibility = View.VISIBLE
-                accountLoader?.visibility = View.INVISIBLE
+                requireActivity().runOnUiThread {
+                    accountName?.text = accountData["user_name"].toString()
+                    accountEmail?.text = accountData["user_email"].toString()
+                    accountIcon?.visibility = View.VISIBLE
+                    accountLoader?.visibility = View.INVISIBLE
+                }
 
-                listener?.onAuthFinished(accountData["user_name"].toString(), accountData["user_email"].toString(), accountData["is_dev"] == true , token)
+                listener?.onAuthFinished(accountData["user_name"].toString(), accountData["user_email"].toString(), accountData["is_dev"] == true , token!!)
             } catch (e: Exception) {
-                invalidate()
-                listener?.onAuthFailed(e.message.toString())
+                requireActivity().runOnUiThread { invalidate() }
+                listener?.onAuthFailed("INVALID_ACCOUNT", e.stackTraceToString())
             }
         }
 
+        /* Reminder: Do not forget to add runOnUiThread {} when working with UI elements */
         override fun onErrorResponse(tag: String, message: String) {
-            invalidate()
-            listener?.onAuthFailed("NO_INTERNET")
+            requireActivity().runOnUiThread { invalidate() }
+            listener?.onAuthFailed("NO_INTERNET", "Failed to connect to the server. Please try again later.")
         }
     }
 
@@ -67,6 +87,12 @@ class TeslasoftIDButton : Fragment() {
         if (result.data != null && result.resultCode >= 20) {
             val sig: String? = result.data!!.getStringExtra("signature")
             val uid: String? = result.data!!.getStringExtra("account_id")
+            token = result.data!!.getStringExtra("auth_token")
+
+            val edit: SharedPreferences.Editor? = accountSettings?.edit()
+            edit?.putString("token", token)
+            edit?.apply()
+
             sync(uid, sig)
         } else {
             when (result.resultCode) {
@@ -75,8 +101,8 @@ class TeslasoftIDButton : Fragment() {
                     listener?.onSignedOut()
                 }
 
-                2 -> listener?.onAuthFailed("PERMISSION_DENIED")
-                Activity.RESULT_CANCELED -> listener?.onAuthFailed("CORE_UNAVAILABLE")
+                2 -> listener?.onAuthFailed("PERMISSION_DENIED", "Permission denied. Please open app settings and allow this app to use Teslasoft ID.")
+                Activity.RESULT_CANCELED -> listener?.onAuthFailed("CORE_UNAVAILABLE", "This app requires one ore more Teslasoft Core features that are currently unavailable. Please contact app developer for further assistance.")
                 else -> listener?.onAuthCanceled()
             }
         }
@@ -101,7 +127,9 @@ class TeslasoftIDButton : Fragment() {
 
         accountIcon?.setImageResource(R.drawable.teslasoft_services_auth_account_icon)
 
-        authBtn?.background = getSurfaceDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.teslasoft_services_auth_accent_account)!!, requireActivity())
+        authBtn?.background = getSurfaceDrawable(ContextCompat.getDrawable(requireActivity(),
+            R.drawable.teslasoft_services_auth_accent_account
+        )!!, requireActivity())
 
         accountIcon?.visibility = View.INVISIBLE
         accountLoader?.visibility = View.INVISIBLE
@@ -109,16 +137,14 @@ class TeslasoftIDButton : Fragment() {
         verificationApi = RequestNetwork(requireActivity())
         accountSettings = requireActivity().getSharedPreferences("account", FragmentActivity.MODE_PRIVATE)
 
-        val uid: String? = accountSettings?.getString("account_id", null)
+        val uid: String? = accountSettings?.getString("user_id", null)
         val sig: String? = accountSettings?.getString("signature", null)
 
-        try {
-            if (uid != null) {
-                sync(uid, sig)
-            } else disableWidget()
-        } catch (_: java.lang.Exception) {
-            disableWidget()
-        }
+        token = accountSettings?.getString("token", null)
+
+        if (uid != null && sig != null && token != null) {
+            sync(uid, sig)
+        } else disableWidget()
 
         authBtn?.setOnClickListener {
             activityResultLauncher.launch(Intent(requireActivity(), TeslasoftIDAuth::class.java))
@@ -127,8 +153,9 @@ class TeslasoftIDButton : Fragment() {
 
     private fun invalidate() {
         val edit = accountSettings?.edit()
-        edit?.remove("account_id")
+        edit?.remove("user_id")
         edit?.remove("signature")
+        edit?.remove("token")
         edit?.apply()
         disableWidget()
     }
@@ -142,8 +169,8 @@ class TeslasoftIDButton : Fragment() {
         accountEmail?.text = getString(R.string.teslasoft_services_auth_sync_desc)
     }
 
-    private fun convertDpToPixel(dp: Float, context: Context): Float {
-        return dp * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+    private fun convertDpToPixel(context: Context): Float {
+        return 22 * (context.resources.displayMetrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
     }
 
     private fun sync(uid : String?, sig : String?) {
@@ -154,7 +181,7 @@ class TeslasoftIDButton : Fragment() {
         accountLoader?.visibility = View.VISIBLE
 
         val edit: SharedPreferences.Editor? = accountSettings?.edit()
-        edit?.putString("account_id", uid)
+        edit?.putString("user_id", uid)
         edit?.putString("signature", sig)
         edit?.apply()
 
@@ -162,7 +189,7 @@ class TeslasoftIDButton : Fragment() {
         requestOptions = requestOptions.transform(
             CenterCrop(),
             RoundedCorners(
-                convertDpToPixel(22f, requireActivity()).toInt()
+                convertDpToPixel(requireActivity()).toInt()
             )
         )
 
@@ -182,6 +209,11 @@ class TeslasoftIDButton : Fragment() {
         return SurfaceColors.SURFACE_2.getColor(context)
     }
 
+    /**
+     * Set a callback listener to the Teslasoft ID button.
+     *
+     * @param listener An implemented interface AccountSyncListener.
+     * */
     fun setAccountSyncListener(listener: AccountSyncListener) {
         this.listener = listener
     }

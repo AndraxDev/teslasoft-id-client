@@ -35,16 +35,16 @@ allprojects {
 }
 
 group = "org.teslasoft.core.auth"
-version = "1.0.2" //Hardcoding snapshot version if none exist in environment variable
+version = "1.1.0" //Hardcoding snapshot version if none exist in environment variable
 
 
 nexusPublishing {
     repositories {
-        sonatype {
+        sonatype {  //only for users registered in Sonatype after 24 Feb 2021
             nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
             snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/releases/"))
-            username = "<OSSRH username has been obfuscated>"
-            password = "<OSSRH password has been obfuscated>"
+            username = "<OSSHR username has been obfuscated>"
+            password = "<OSSHR password has been obfuscated>"
         }
     }
 }

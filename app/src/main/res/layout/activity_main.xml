@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ui"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/window_background"
@@ -22,7 +23,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/teslasoft_id_btn"
-        android:name="org.teslasoft.core.auth.TeslasoftIDButton"
+        android:name="org.teslasoft.core.auth.widget.TeslasoftIDButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -30,5 +31,79 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_title"
         tools:layout="@layout/widget_teslasoft_id" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/account_restricted"
+        android:layout_width="360dp"
+        android:layout_height="384dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:background="@drawable/surface2"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/teslasoft_id_btn">
+
+        <ProgressBar
+            android:id="@+id/settings_progress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/settings"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:background="@drawable/surface2"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint='Place JSON settings here or click "Sync settings"'
+            android:inputType="textMultiLine"
+            android:padding="16dp"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/action_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="84dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/settings">
+
+            <Button
+                android:id="@+id/sync_settings"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_accent"
+                android:text="Sync settings"
+                android:textColor="@color/accent_900" />
+
+            <Button
+                android:id="@+id/upload_settings"
+                style="?android:borderlessButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_margin="16dp"
+                android:layout_weight="1"
+                android:background="@drawable/btn_accent"
+                android:text="Upload settings"
+                android:textColor="@color/accent_900" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
