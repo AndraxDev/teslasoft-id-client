@@ -29,6 +29,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -41,11 +42,9 @@ import com.google.android.material.elevation.SurfaceColors
 import com.google.gson.Gson
 import org.teslasoft.core.auth.*
 
-class TeslasoftIDButton : Fragment() {
+class TeslasoftIDCircledButton : Fragment() {
     private var accountIcon: ImageView? = null
-    private var accountName: TextView? = null
-    private var accountEmail: TextView? = null
-    private var authBtn: LinearLayout? = null
+    private var authBtn: ConstraintLayout? = null
     private var accountLoader: ProgressBar? = null
     private var verificationApi: RequestNetwork? = null
     private var accountSettings: SharedPreferences? = null
@@ -63,8 +62,6 @@ class TeslasoftIDButton : Fragment() {
                 val accountData: Map<*,*> = gson.fromJson(message, Map::class.java)
 
                 requireActivity().runOnUiThread {
-                    accountName?.text = accountData["user_name"].toString()
-                    accountEmail?.text = accountData["user_email"].toString()
                     accountIcon?.visibility = View.VISIBLE
                     accountLoader?.visibility = View.INVISIBLE
                 }
@@ -113,7 +110,7 @@ class TeslasoftIDButton : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.widget_teslasoft_id, container, false)
+        return inflater.inflate(R.layout.widget_teslasoft_id_circle, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -121,14 +118,12 @@ class TeslasoftIDButton : Fragment() {
 
         authBtn = view.findViewById(R.id.btn_teslasoft_id)
         accountIcon = view.findViewById(R.id.account_icon)
-        accountName = view.findViewById(R.id.account_name)
-        accountEmail = view.findViewById(R.id.account_email)
         accountLoader = view.findViewById(R.id.account_loader)
 
         accountIcon?.setImageResource(R.drawable.teslasoft_services_auth_account_icon)
 
         authBtn?.background = getSurfaceDrawable(ContextCompat.getDrawable(requireActivity(),
-            R.drawable.teslasoft_services_auth_accent_account
+            R.drawable.teslasoft_services_auth_accent_account_circle
         )!!, requireActivity())
 
         accountIcon?.visibility = View.INVISIBLE
@@ -165,8 +160,6 @@ class TeslasoftIDButton : Fragment() {
         accountLoader?.visibility = View.INVISIBLE
 
         accountIcon?.setImageResource(R.drawable.teslasoft_services_auth_account_icon)
-        accountName?.text = getString(R.string.teslasoft_services_auth_sync_title)
-        accountEmail?.text = getString(R.string.teslasoft_services_auth_sync_desc)
     }
 
     private fun convertDpToPixel(context: Context): Float {
@@ -174,8 +167,6 @@ class TeslasoftIDButton : Fragment() {
     }
 
     private fun sync(uid : String?, sig : String?) {
-        accountName?.text = getString(R.string.teslasoft_services_auth_sync_loading)
-        accountEmail?.text = ""
 
         accountIcon?.visibility = View.INVISIBLE
         accountLoader?.visibility = View.VISIBLE

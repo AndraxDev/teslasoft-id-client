@@ -131,7 +131,7 @@ class TeslasoftIDAuth : FragmentActivity() {
                 .setTitle(R.string.teslasoft_services_auth_core_name)
                 .setMessage(R.string.teslasoft_services_auth_core_permission)
                 .setCancelable(false)
-                .setPositiveButton(R.string.teslasoft_services_auth_dialog_close) { _: DialogInterface?, _: Int ->
+                .setPositiveButton(R.string.teslasoft_services_auth_permission_allow) { _: DialogInterface?, _: Int ->
                     requestPermissionLauncher.launch("org.teslasoft.core.permission.AUTHENTICATE_ACCOUNTS")
                 }.setNegativeButton("No thanks") { _: DialogInterface?, _: Int ->
                     this.setResult(2)

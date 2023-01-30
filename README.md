@@ -1,6 +1,6 @@
 # Teslasoft ID client
 This library enable you to authenticate users through Teslasoft ID. 
-Also this app can help you to personalize user experience by saving app's settings into 
+Also this library can help you to personalize user experience by saving app's settings into 
 Teslasoft ID account and syncing it between multiple devices.
 
 ## Installation
@@ -40,6 +40,25 @@ Add the following code to your layout:
         />
 ...
 ```
+
+Circluar button:
+
+```xml
+...
+<androidx.fragment.app.FragmentContainerView
+        android:id="@+id/teslasoft_id_btn"
+        android:name="org.teslasoft.core.auth.widget.TeslasoftIDCircledButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/widget_teslasoft_id_circle" 
+        ... other params ...
+        />
+...
+```
+
+> **Warning**
+>
+> Do not use both buttons on the same Activity/Fragment. It will break account sync.
 
 Add the following code to your Activity/Fragment:
 
@@ -125,7 +144,7 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 > **Note**
 >
-> Please use parentFragmentManager instead of supportFragmentManager if you are using this code inside Fragment
+> Please use childFragmentManager instead of supportFragmentManager if you are using this code inside Fragment
 >
 > Also do not forget to replace all "this" calls with requireActivity()
 

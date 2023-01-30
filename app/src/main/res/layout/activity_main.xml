@@ -12,8 +12,8 @@
         android:id="@+id/activity_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/app_name"
+        android:layout_marginTop="24dp"
+        android:text="Some product"
         android:textColor="@color/accent_900"
         android:textSize="24sp"
         android:textStyle="bold"
@@ -22,11 +22,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/teslasoft_id_btn"
-        android:name="org.teslasoft.core.auth.widget.TeslasoftIDButton"
+        android:id="@+id/teslasoft_id_btn_circled"
+        android:name="org.teslasoft.core.auth.widget.TeslasoftIDCircledButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout="@layout/widget_teslasoft_id_circle" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/teslasoft_id_btn"
+        android:name="org.teslasoft.core.auth.widget.TeslasoftIDButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/activity_title"
@@ -34,7 +47,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/account_restricted"
-        android:layout_width="360dp"
+        android:layout_width="0dp"
         android:layout_height="384dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"

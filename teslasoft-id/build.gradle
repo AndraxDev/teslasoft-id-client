@@ -6,13 +6,13 @@ plugins {
 }
 
 def artifactId0 = 'teslasoft-id'
-def ossrhUsername = "<OSSHR username has been obfuscated>"
-def ossrhPassword = "<OSSHR password has been obfuscated>"
-def signingKey = "<Signing key has been obfuscated>"
-def signingKeyPwd = "<Signing key passcode has been obfuscated>"
+def ossrhUsername = "<OSSRH username has been obfuscated>"
+def ossrhPassword = "<OSSRH password has been obfuscated>"
+def signingKey = "<Secret key has been obfuscated>"
+def signingKeyPwd = "<Secret key passcode has been obfuscated>"
 
 group = "org.teslasoft.core.auth"
-version = "1.1.0"
+version = "1.2.0"
 
 android {
     namespace 'org.teslasoft.core.auth'
@@ -21,10 +21,8 @@ android {
     defaultConfig {
         minSdk 28
         targetSdk 33
-
-        versionName "1.1.0"
-
-        consumerProguardFiles "consumer-rules.pro"
+        versionCode 7
+        versionName "1.2.0"
 
         aarMetadata {
             minCompileSdk = 28
@@ -68,7 +66,6 @@ dependencies {
 }
 
 task javadoc(type: Javadoc) {
-
     doFirst {
         configurations.implementation
                 .filter { it.name.endsWith('.aar') }
@@ -90,7 +87,9 @@ task javadoc(type: Javadoc) {
     failOnError false
     exclude '**/BuildConfig.java'
     exclude '**/R.java'
+    doNotTrackState("")
 }
+
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier.set('javadoc')
@@ -107,7 +106,7 @@ afterEvaluate {
         publications {
             release(MavenPublication) {
                 from components.release
-                // You can then customize attributes of the publication as shown below.
+
                 groupId = group
                 artifactId = artifactId0
                 version = version
@@ -117,14 +116,16 @@ afterEvaluate {
 
                 pom {
                     name = artifactId
-                    description = 'This library enable you to authenticate users through Teslasoft ID'
-                    url = 'https://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id'
+                    description = 'This library enable you to authenticate users through Teslasoft ID. Also this library can help you to personalize user experience by saving app\'s settings into Teslasoft ID account and syncing it between multiple devices.'
+                    url = 'https://github.com/AndraxDev/teslasoft-id-client'
+
                     licenses {
                         license {
                             name = 'The Apache License, Version 2.0'
                             url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                         }
                     }
+
                     developers {
                         developer {
                             id = 'andrax'
@@ -132,10 +133,11 @@ afterEvaluate {
                             email = 'dostapenko82@gmail.com'
                         }
                     }
+
                     scm {
-                        connection = 'scm:git:github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id.git'
-                        developerConnection = 'scm:git:ssh://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id.git'
-                        url = 'https://github.com/AndraxDev/teslasoft-id-client/tree/main/teslasoft-id'
+                        connection = 'scm:git:github.com/AndraxDev/teslasoft-id-client.git'
+                        developerConnection = 'scm:git:ssh://github.com/AndraxDev/teslasoft-id-client.git'
+                        url = 'https://github.com/AndraxDev/teslasoft-id-client'
                     }
                 }
             }

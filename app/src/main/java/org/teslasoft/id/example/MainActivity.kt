@@ -42,6 +42,7 @@ import org.teslasoft.core.auth.client.SyncListener
 import org.teslasoft.core.auth.client.TeslasoftIDClient
 import org.teslasoft.core.auth.client.TeslasoftIDClientBuilder
 import org.teslasoft.core.auth.widget.TeslasoftIDButton
+import org.teslasoft.core.auth.widget.TeslasoftIDCircledButton
 
 class MainActivity : FragmentActivity() {
 
@@ -120,6 +121,7 @@ class MainActivity : FragmentActivity() {
     }
 
     private var teslasoftIDButton: TeslasoftIDButton? = null
+    private var teslasoftIDCircledButton: TeslasoftIDCircledButton? = null
     private var account: Map<String, String>? = null
     private var settings: String = ""
 
@@ -154,6 +156,11 @@ class MainActivity : FragmentActivity() {
 
         if (teslasoftIDButton == null) Toast.makeText(this, "Could not find Teslasoft ID button in $this", Toast.LENGTH_SHORT).show()
         else teslasoftIDButton?.setAccountSyncListener(accountDataListener)
+
+        teslasoftIDCircledButton = supportFragmentManager.findFragmentById(R.id.teslasoft_id_btn_circled) as TeslasoftIDCircledButton
+
+        if (teslasoftIDCircledButton == null) Toast.makeText(this, "Could not find Teslasoft ID button in $this", Toast.LENGTH_SHORT).show()
+        else teslasoftIDCircledButton?.setAccountSyncListener(accountDataListener)
 
         updateUI()
         switchUI(false)
