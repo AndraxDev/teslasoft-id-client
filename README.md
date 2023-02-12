@@ -163,7 +163,7 @@ val client = TeslasoftIDClientBuilder(this)
 
 > **Note**
 >
-> Contact me to request an API key: dostapenko82@gmail.com
+> Fill out this form to request an API key: https://forms.gle/AZ4dNCLnsTpsVNNE6
 
 Add settings listener and sync listener:
 
